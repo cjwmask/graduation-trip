@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>華醫調保系畢業旅行報名</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background: linear-gradient(135deg, #e8f5e9 0%, #f3e5f5 100%);
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+
+    .container { max-width: 580px; margin: 0 auto; }
+
+    header { text-align: center; margin-bottom: 24px; }
+    .emoji-banner { font-size: 44px; line-height: 1; margin-bottom: 10px; }
+    h1 { font-size: 22px; color: #1a237e; font-weight: 700; margin-bottom: 4px; }
+    .subtitle { font-size: 15px; color: #5c6bc0; font-weight: 600; margin-bottom: 4px; }
+    header p { font-size: 13px; color: #888; }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    .card-title {
+      font-size: 14px; font-weight: 700; color: #333;
+      margin-bottom: 14px; padding-bottom: 10px;
+      border-bottom: 2px solid #e8eaf6;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* 基本資料 */
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 5px; }
+    .field label .req, .req { color: #e53935; margin-left: 2px; }
+    .field input {
+      width: 100%; padding: 9px 12px; border: 1.5px solid #ddd;
+      border-radius: 8px; font-size: 15px; color: #333;
+      outline: none; transition: border-color 0.2s; -webkit-appearance: none;
+    }
+    .field input:focus { border-color: #7986cb; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* 民國生日 */
+    .bday-row { display: flex; align-items: center; gap: 6px; }
+    .bday-row input {
+      padding: 9px 8px; border: 1.5px solid #ddd; border-radius: 8px;
+      font-size: 15px; color: #333; outline: none; text-align: center;
+      transition: border-color 0.2s; -webkit-appearance: none;
+    }
+    .bday-row input:focus { border-color: #7986cb; }
+    .bday-year  { width: 72px; }
+    .bday-month { width: 50px; }
+    .bday-day   { width: 50px; }
+    .bday-row span { font-size: 14px; color: #555; font-weight: 600; white-space: nowrap; }
+
+    /* 人員卡片 */
+    .person-card {
+      border: 2px solid #e8eaf6;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+
+    .person-card.family { border-color: #e1bee7; }
+
+    .person-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .person-label {
+      font-size: 14px; font-weight: 700;
+    }
+
+    .person-label.self  { color: #3949ab; }
+    .person-label.family { color: #7b1fa2; }
+
+    .btn-remove {
+      background: none; border: 1.5px solid #e0e0e0; border-radius: 6px;
+      padding: 3px 10px; font-size: 12px; color: #999; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-remove:hover { border-color: #ef9a9a; color: #e53935; background: #fff5f5; }
+
+    /* 交通工具 radio */
+    .radio-group { display: flex; gap: 8px; margin-top: 6px; }
+    .radio-chip {
+      flex: 1; display: flex; align-items: center; gap: 10px;
+      border: 2px solid #e0e0e0; border-radius: 9px; padding: 10px 14px;
+      cursor: pointer; transition: all 0.15s; font-size: 14px; font-weight: 600; color: #444;
+    }
+    .radio-chip:hover { border-color: #9fa8da; background: #f8f9ff; }
+    .radio-chip.sel { border-color: #3949ab; background: #e8eaf6; color: #1a237e; }
+    .radio-chip input[type="radio"] { display: none; }
+    .radio-dot {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid #bbb; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .radio-chip.sel .radio-dot {
+      border-color: #3949ab; background: #3949ab;
+    }
+    .radio-chip.sel .radio-dot::after {
+      content: ''; width: 7px; height: 7px;
+      background: #fff; border-radius: 50%;
+    }
+
+    /* 票種選擇 */
+    .ticket-section-label {
+      font-size: 12px; font-weight: 700; color: #555;
+      margin-bottom: 8px; margin-top: 14px;
+    }
+
+    .ticket-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-bottom: 8px;
+    }
+
+    .t-chip {
+      border: 2px solid #e0e0e0; border-radius: 9px;
+      padding: 9px 10px; cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .t-chip.full { grid-column: 1 / -1; }
+    .t-chip:hover { border-color: #9fa8da; background: #f8f9ff; }
+    .t-chip.sel   { border-color: #3949ab; background: #e8eaf6; }
+    .family .t-chip.sel { border-color: #7b1fa2; background: #f3e5f5; }
+
+    .t-chip input[type="radio"] {
+      accent-color: #3949ab; width: 15px; height: 15px; flex-shrink: 0;
+    }
+    .family .t-chip input[type="radio"] { accent-color: #7b1fa2; }
+
+    .t-name { font-size: 12px; font-weight: 600; color: #333; line-height: 1.3; flex: 1; }
+    .t-price { font-size: 13px; font-weight: 700; color: #2e7d32; white-space: nowrap; }
+    .t-save  { font-size: 10px; color: #e53935; }
+
+    .badge {
+      display: inline-block; background: #ff7043; color: #fff;
+      font-size: 9px; font-weight: 700; padding: 1px 5px;
+      border-radius: 20px; margin-left: 3px; vertical-align: middle;
+    }
+
+    /* 手工皂 */
+    .soap-label {
+      display: flex; align-items: center; gap: 8px;
+      border: 2px solid #e0e0e0; border-radius: 9px;
+      padding: 9px 12px; cursor: pointer; transition: all 0.2s; width: 100%;
+      margin-top: 4px;
+    }
+    .soap-label:hover { border-color: #f48fb1; background: #fff8fa; }
+    .soap-label.sel { border-color: #e91e63; background: #fce4ec; }
+    .soap-label input[type="checkbox"] {
+      accent-color: #e91e63; width: 16px; height: 16px; flex-shrink: 0;
+    }
+    .soap-text  { flex: 1; font-size: 12px; font-weight: 600; color: #444; }
+    .soap-price { font-size: 13px; font-weight: 700; color: #c2185b; }
+
+    /* 標題列內的新增按鈕 */
+    .btn-add-inline {
+      background: #f3e5f5; border: 1.5px solid #b39ddb; border-radius: 8px;
+      padding: 5px 12px; font-size: 13px; font-weight: 700; color: #7b1fa2;
+      cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-add-inline:hover { background: #e1bee7; border-color: #7b1fa2; }
+
+    /* 固定費用列表 */
+    .fixed-items {
+      border: 2px solid #e8eaf6; border-radius: 10px;
+      overflow: hidden; margin-bottom: 4px;
+    }
+    .fixed-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 9px 14px; font-size: 13px; color: #444;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .fixed-item:last-child { border-bottom: none; }
+    .fixed-item span:first-child { font-weight: 500; }
+    .fixed-item span:last-child  { font-weight: 700; color: #2e7d32; }
+
+    /* 底部新增家屬按鈕 */
+    .btn-add {
+      width: 100%; padding: 13px;
+      background: #fff; border: 2px dashed #b39ddb; border-radius: 12px;
+      font-size: 15px; font-weight: 600; color: #7b1fa2;
+      cursor: pointer; transition: all 0.2s; margin-bottom: 12px;
+    }
+    .btn-add:hover { background: #f3e5f5; border-color: #7b1fa2; }
+
+    /* 費用摘要 */
+    .fee-box {
+      background: linear-gradient(135deg, #e8eaf6, #c5cae9);
+      border-radius: 12px; padding: 16px 18px; margin-bottom: 16px;
+    }
+    .fee-row {
+      display: flex; justify-content: space-between;
+      font-size: 13px; color: #555; margin-bottom: 4px;
+    }
+    .fee-row.person { font-weight: 700; color: #3949ab; margin-top: 8px; font-size: 13px; }
+    .fee-row.sub { padding-left: 10px; font-size: 12px; color: #666; }
+    .fee-row.total {
+      font-size: 19px; font-weight: 700; color: #1a237e;
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1.5px solid #9fa8da; margin-bottom: 0;
+    }
+    .fee-hint { color: #aaa; font-size: 13px; text-align: center; padding: 4px 0; }
+
+    /* 送出 */
+    .field-note { margin-bottom: 14px; }
+    .btn-submit {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, #3949ab, #1a237e);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-submit:hover { opacity: 0.9; }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:disabled { background: #bbb; cursor: not-allowed; }
+
+    #status-msg { text-align: center; font-size: 14px; margin-top: 12px; min-height: 20px; }
+    .err { color: #c62828; }
+    .loading { color: #888; }
+
+    /* 成功畫面 */
+    #success-screen { display: none; text-align: center; padding: 40px 20px; }
+    #success-screen .big-emoji { font-size: 64px; margin-bottom: 16px; }
+    #success-screen h2 { font-size: 22px; color: #1a237e; margin-bottom: 8px; }
+    #success-screen p { font-size: 14px; color: #666; line-height: 1.8; }
+
+    footer { text-align: center; font-size: 12px; color: #aaa; margin-top: 20px; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="emoji-banner">🎓</div>
+    <h1>華醫調保系畢業旅行</h1>
+    <p class="subtitle">報名表</p>
+    <p>請填寫完整資訊並選擇活動項目後送出</p>
+  </header>
+
+  <div id="form-body">
+
+    <!-- 參加人員 -->
+    <div class="card">
+      <div class="card-title">
+        👥 參加人員
+        <button class="btn-add-inline" onclick="addMember()">＋ 新增家屬</button>
+      </div>
+
+      <!-- 本人 -->
+      <div class="person-card" id="person-self">
+        <div class="person-header">
+          <span class="person-label self">🎓 本人（同學）</span>
+        </div>
+        <div class="field">
+          <label>姓名 <span class="req">*</span></label>
+          <input type="text" id="self_name" placeholder="王小明" maxlength="20">
+        </div>
+        <div class="field">
+          <label>出生年月日（民國）<span class="req">*</span></label>
+          <div class="bday-row">
+            <span>民國</span>
+            <input class="bday-year"  type="number" id="self_by" placeholder="年" min="40" max="120">
+            <span>年</span>
+            <input class="bday-month" type="number" id="self_bm" placeholder="月" min="1" max="12">
+            <span>月</span>
+            <input class="bday-day"   type="number" id="self_bd" placeholder="日" min="1" max="31">
+            <span>日</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>身份證字號 <span class="req">*</span></label>
+          <input type="text" id="self_idno" placeholder="A123456789" maxlength="10" style="text-transform:uppercase;">
+        </div>
+        <div class="field">
+          <label>聯絡電話 <span class="req">*</span></label>
+          <input type="tel" id="self_phone" placeholder="0912-345-678" maxlength="20">
+        </div>
+        <div class="field">
+          <label>是否可提供交通工具（車輛）？ <span class="req">*</span></label>
+          <div style="font-size:12px; color:#888; margin-bottom:6px;">此調查供主辦方統籌調度車輛使用，感謝配合</div>
+          <div class="radio-group">
+            <label class="radio-chip" id="car-yes-chip" onclick="selectCar('yes')">
+              <input type="radio" name="car" value="yes">
+              <span class="radio-dot"></span> 可以提供
+            </label>
+            <label class="radio-chip" id="car-no-chip" onclick="selectCar('no')">
+              <input type="radio" name="car" value="no">
+              <span class="radio-dot"></span> 無法提供
+            </label>
+          </div>
+          <div id="car-seats-wrap" style="display:none; margin-top:8px;">
+            <input type="number" id="car_seats" placeholder="可搭載人數（不含駕駛）" min="1" max="20" style="width:100%; padding:9px 12px; border:1.5px solid #ddd; border-radius:8px; font-size:15px; outline:none;">
+          </div>
+        </div>
+        <div class="ticket-section-label">🧊 冷研探索館（必選）<span class="req">*</span></div>
+        <div class="radio-group">
+          <label class="radio-chip" id="cold-adult-chip-self" onclick="selectCold('self','adult')">
+            <input type="radio" name="cold_self" value="adult">
+            <span class="radio-dot"></span> 大人 $200
+          </label>
+          <label class="radio-chip" id="cold-child-chip-self" onclick="selectCold('self','child')">
+            <input type="radio" name="cold_self" value="child">
+            <span class="radio-dot"></span> 小孩 $100
+          </label>
+        </div>
+        <div class="ticket-section-label">🐑 咩咩上樹票種 <span class="req">*</span></div>
+        <div id="self_tickets"></div>
+        <div class="ticket-section-label" style="margin-top:12px;">🍖 晚餐BBQ＋隔日早餐（必選）<span class="req">*</span></div>
+        <div class="radio-group">
+          <label class="radio-chip" id="dinner-adult-chip-self" onclick="selectDinner('self','adult')">
+            <input type="radio" name="dinner_self" value="adult">
+            <span class="radio-dot"></span> 大人 $350
+          </label>
+          <label class="radio-chip" id="dinner-child-chip-self" onclick="selectDinner('self','child')">
+            <input type="radio" name="dinner_self" value="child">
+            <span class="radio-dot"></span> 小孩／素食 $250
+          </label>
+        </div>
+        <div class="ticket-section-label" style="margin-top:12px;">📋 固定費用（每人必含）</div>
+        <div class="fixed-items">
+          <div class="fixed-item"><span>🏠 俞家住宿</span><span>$1,963</span></div>
+          <div class="fixed-item"><span>🍱 逐鹿午餐</span><span>$360</span></div>
+          <div class="fixed-item"><span>🦌 逐鹿導覽＋節目</span><span>$225</span></div>
+          <div class="fixed-item"><span>🚌 交通費 <span style="font-size:11px;color:#888;font-weight:400;">（將分配給司機作為油資）</span></span><span>$250</span></div>
+          <div class="fixed-item"><span>👩‍🏫 劉靜蓉老師費用（學生分擔）</span><span>$249</span></div>
+        </div>
+        <div class="ticket-section-label" style="margin-top:8px;">🛡️ 保險（必選）<span class="req">*</span></div>
+        <div class="radio-group">
+          <label class="radio-chip" id="ins-adult-chip-self" onclick="selectIns('self','adult')">
+            <input type="radio" name="ins_self" value="adult">
+            <span class="radio-dot"></span> 大人 $69
+          </label>
+          <label class="radio-chip" id="ins-child-chip-self" onclick="selectIns('self','child')">
+            <input type="radio" name="ins_self" value="child">
+            <span class="radio-dot"></span> 小孩 $26
+          </label>
+        </div>
+      </div>
+
+      <!-- 家屬卡片動態插入此處 -->
+      <div id="members-container"></div>
+
+      <!-- 新增家屬按鈕 -->
+      <button class="btn-add" onclick="addMember()">＋ 新增家屬</button>
+    </div>
+
+    <!-- 費用摘要 -->
+    <div class="card">
+      <div class="card-title">💰 費用摘要</div>
+      <div class="fee-box">
+        <div class="fee-hint" id="fee-hint">請先選擇票種</div>
+        <div id="fee-detail" style="display:none;"></div>
+      </div>
+      <!-- 收款資訊 -->
+      <div style="background:#fff8e1;border:1.5px solid #ffe082;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:14px;line-height:1.8;">
+        <div style="font-weight:700;color:#f57f17;margin-bottom:4px;">💳 匯款帳號（主辦方）</div>
+        <div>收款人：<strong>張簡綉純</strong></div>
+        <div>銀行：<strong>中信銀行（822）</strong></div>
+        <div>帳號：<strong style="letter-spacing:1px;">229540094014</strong></div>
+        <div style="font-size:12px;color:#888;margin-top:4px;">※ 請完成報名後依費用摘要金額匯款，多退少補</div>
+      </div>
+      <div class="field">
+        <label>您的銀行代碼 <span class="req">*</span></label>
+        <input type="text" id="self_bank_code" placeholder="例：822（中信）、004（台銀）" maxlength="10" inputmode="numeric">
+        <label style="margin-top:8px;">您的匯款帳號（完整） <span class="req">*</span></label>
+        <input type="text" id="self_bank" placeholder="請填寫完整帳號，退款時使用" maxlength="30" inputmode="numeric">
+        <label style="margin-top:8px;">匯款日期 <span class="req">*</span></label>
+        <input type="date" id="self_bank_date">
+      </div>
+      <div class="field field-note">
+        <label>備註（過敏、飲食需求等）</label>
+        <input type="text" id="note" placeholder="選填" maxlength="100">
+      </div>
+      <button class="btn-submit" id="btn-submit" onclick="submitForm()">送出報名</button>
+      <div id="status-msg"></div>
+    </div>
+
+  </div>
+
+  <!-- 成功畫面 -->
+  <div class="card" id="success-screen">
+    <div class="big-emoji">🎓</div>
+    <h2>報名成功！</h2>
+    <p id="success-detail"></p>
+    <p style="margin-top:12px; color:#888;">如需修改請聯絡老師</p>
+  </div>
+
+  <footer>華醫調保系畢業旅行報名系統 · 資料僅供活動使用</footer>
+</div>
+
+<script>
+const TICKETS = [
+  { value:'A',   label:'🐾 動物樂園',     price:180, save:'',      full:false },
+  { value:'B',   label:'🌲 森林高空冒險', price:399, save:'',      full:false },
+  { value:'C',   label:'🎢 極限大擺盪',   price:149, save:'',      full:false },
+  { value:'BC',  label:'🌲+🎢 組合套票', price:499, save:'省$49',  full:false, badge:'推薦' },
+  { value:'ABC', label:'🎉 無限暢玩',     price:599, save:'省$129', full:true,  badge:'最超值' },
+];
+const SOAP_PRICE = 250;
+const SCRIPT_URL = 'https://api.web3forms.com/submit';
+const WEB3FORMS_KEY = 'd4974278-07f8-4159-9e5f-2f6d93360240';
+let memberCount = 0;
+
+// ─── 渲染票種 ────────────────────────────────────
+function renderTickets(container, nameAttr, prefix, isFamily) {
+  const grid = document.createElement('div');
+  grid.className = 'ticket-grid';
+
+  TICKETS.forEach(t => {
+    const lbl = document.createElement('label');
+    lbl.className = 't-chip' + (t.full ? ' full' : '');
+    lbl.dataset.prefix = prefix;
+    lbl.dataset.value  = t.value;
+    lbl.innerHTML = `
+      <input type="radio" name="${nameAttr}" value="${t.value}" onchange="onTicket('${prefix}')">
+      <span class="t-name">${t.label}${t.badge ? `<span class="badge">${t.badge}</span>` : ''}
+        ${t.save ? `<br><span class="t-save">${t.save}</span>` : ''}
+      </span>
+      <span class="t-price">$${t.price}</span>`;
+    grid.appendChild(lbl);
+  });
+
+  // 手工皂
+  const soapRow = document.createElement('div');
+  soapRow.style.gridColumn = '1/-1';
+  const soapLbl = document.createElement('label');
+  soapLbl.className = 'soap-label';
+  soapLbl.htmlFor = `${prefix}_soap`;
+  soapLbl.innerHTML = `
+    <input type="checkbox" id="${prefix}_soap" onchange="onSoap(this)">
+    <span class="soap-text">🧼 手工皂製作體驗（加購）</span>
+    <span class="soap-price">+$250</span>`;
+  soapRow.appendChild(soapLbl);
+  grid.appendChild(soapRow);
+
+  container.appendChild(grid);
+}
+
+// 本人票種
+renderTickets(document.getElementById('self_tickets'), 'ticket_self', 'self', false);
+
+// ─── 冷研探索館 ───────────────────────────────────
+const COLD_PRICES = { adult: 200, child: 100 };
+
+function selectCold(prefix, val) {
+  document.querySelector(`input[name="cold_${prefix}"][value="${val}"]`).checked = true;
+  document.getElementById(`cold-adult-chip-${prefix}`).classList.toggle('sel', val === 'adult');
+  document.getElementById(`cold-child-chip-${prefix}`).classList.toggle('sel', val === 'child');
+  updateFee();
+}
+
+function getCold(prefix) {
+  const r = document.querySelector(`input[name="cold_${prefix}"]:checked`);
+  if (!r) return null;
+  return { type: r.value === 'adult' ? '大人' : '小孩', price: COLD_PRICES[r.value] };
+}
+
+// ─── 晚餐BBQ ──────────────────────────────────────
+const DINNER_PRICES = { adult: 350, child: 250 };
+
+function selectDinner(prefix, val) {
+  document.querySelector(`input[name="dinner_${prefix}"][value="${val}"]`).checked = true;
+  document.getElementById(`dinner-adult-chip-${prefix}`).classList.toggle('sel', val === 'adult');
+  document.getElementById(`dinner-child-chip-${prefix}`).classList.toggle('sel', val === 'child');
+  updateFee();
+}
+
+function getDinner(prefix) {
+  const r = document.querySelector(`input[name="dinner_${prefix}"]:checked`);
+  if (!r) return null;
+  return { type: r.value === 'adult' ? '大人' : '小孩／素食', price: DINNER_PRICES[r.value] };
+}
+
+// ─── 固定費用 & 保險 ──────────────────────────────
+const FIXED_COST = 1963 + 360 + 225 + 250; // 2798 (共用，含學生及家屬)
+const TEACHER_FEE = 249; // 僅學生本人負擔
+const INS_PRICES = { adult: 69, child: 26 };
+
+function selectIns(prefix, val) {
+  document.querySelector(`input[name="ins_${prefix}"][value="${val}"]`).checked = true;
+  document.getElementById(`ins-adult-chip-${prefix}`).classList.toggle('sel', val === 'adult');
+  document.getElementById(`ins-child-chip-${prefix}`).classList.toggle('sel', val === 'child');
+  updateFee();
+}
+
+function getIns(prefix) {
+  const r = document.querySelector(`input[name="ins_${prefix}"]:checked`);
+  if (!r) return null;
+  return { type: r.value === 'adult' ? '大人' : '小孩', price: INS_PRICES[r.value] };
+}
+
+// ─── 交通工具 ─────────────────────────────────────
+function selectCar(val) {
+  document.querySelector(`input[name="car"][value="${val}"]`).checked = true;
+  document.getElementById('car-yes-chip').classList.toggle('sel', val === 'yes');
+  document.getElementById('car-no-chip').classList.toggle('sel', val === 'no');
+  document.getElementById('car-seats-wrap').style.display = val === 'yes' ? 'block' : 'none';
+}
+
+// ─── 事件 ────────────────────────────────────────
+function onTicket(prefix) {
+  document.querySelectorAll(`[data-prefix="${prefix}"]`).forEach(el => {
+    el.classList.toggle('sel', el.querySelector('input[type="radio"]').checked);
+  });
+  updateFee();
+}
+
+function onSoap(cb) {
+  cb.closest('.soap-label').classList.toggle('sel', cb.checked);
+  updateFee();
+}
+
+// ─── 新增家屬 ─────────────────────────────────────
+function addMember() {
+  memberCount++;
+  const idx = memberCount;
+  const card = document.createElement('div');
+  card.className = 'person-card family';
+  card.id = `member-${idx}`;
+  card.innerHTML = `
+    <div class="person-header">
+      <span class="person-label family">👤 家屬 ${idx}</span>
+      <button class="btn-remove" onclick="removeMember(${idx})">移除</button>
+    </div>
+    <div class="field">
+      <label>姓名 <span class="req">*</span></label>
+      <input type="text" id="m${idx}_name" placeholder="姓名" maxlength="20">
+    </div>
+    <div class="field">
+      <label>出生年月日（民國）<span class="req">*</span></label>
+      <div class="bday-row">
+        <span>民國</span>
+        <input class="bday-year"  type="number" id="m${idx}_by" placeholder="年" min="40" max="120">
+        <span>年</span>
+        <input class="bday-month" type="number" id="m${idx}_bm" placeholder="月" min="1" max="12">
+        <span>月</span>
+        <input class="bday-day"   type="number" id="m${idx}_bd" placeholder="日" min="1" max="31">
+        <span>日</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>身份證字號 <span class="req">*</span></label>
+      <input type="text" id="m${idx}_idno" placeholder="A123456789" maxlength="10" style="text-transform:uppercase;">
+    </div>
+    <div class="ticket-section-label">🧊 冷研探索館（必選）<span class="req">*</span></div>
+    <div class="radio-group">
+      <label class="radio-chip" id="cold-adult-chip-m${idx}" onclick="selectCold('m${idx}','adult')">
+        <input type="radio" name="cold_m${idx}" value="adult">
+        <span class="radio-dot"></span> 大人 $200
+      </label>
+      <label class="radio-chip" id="cold-child-chip-m${idx}" onclick="selectCold('m${idx}','child')">
+        <input type="radio" name="cold_m${idx}" value="child">
+        <span class="radio-dot"></span> 小孩 $100
+      </label>
+    </div>
+    <div class="ticket-section-label">🐑 咩咩上樹票種 <span class="req">*</span></div>
+    <div id="m${idx}_tickets"></div>
+    <div class="ticket-section-label" style="margin-top:12px;">🍖 晚餐BBQ＋隔日早餐（必選）<span class="req">*</span></div>
+    <div class="radio-group">
+      <label class="radio-chip" id="dinner-adult-chip-m${idx}" onclick="selectDinner('m${idx}','adult')">
+        <input type="radio" name="dinner_m${idx}" value="adult">
+        <span class="radio-dot"></span> 大人 $350
+      </label>
+      <label class="radio-chip" id="dinner-child-chip-m${idx}" onclick="selectDinner('m${idx}','child')">
+        <input type="radio" name="dinner_m${idx}" value="child">
+        <span class="radio-dot"></span> 小孩／素食 $250
+      </label>
+    </div>
+    <div class="ticket-section-label" style="margin-top:12px;">📋 固定費用（每人必含）</div>
+    <div class="fixed-items">
+      <div class="fixed-item"><span>🏠 俞家住宿</span><span>$1,963</span></div>
+      <div class="fixed-item"><span>🍱 逐鹿午餐</span><span>$360</span></div>
+      <div class="fixed-item"><span>🦌 逐鹿導覽＋節目</span><span>$225</span></div>
+      <div class="fixed-item"><span>🚌 交通費 <span style="font-size:11px;color:#888;font-weight:400;">（將分配給司機作為油資）</span></span><span>$250</span></div>
+    </div>
+    <div class="ticket-section-label" style="margin-top:8px;">🛡️ 保險（必選）<span class="req">*</span></div>
+    <div class="radio-group">
+      <label class="radio-chip" id="ins-adult-chip-m${idx}" onclick="selectIns('m${idx}','adult')">
+        <input type="radio" name="ins_m${idx}" value="adult">
+        <span class="radio-dot"></span> 大人 $69
+      </label>
+      <label class="radio-chip" id="ins-child-chip-m${idx}" onclick="selectIns('m${idx}','child')">
+        <input type="radio" name="ins_m${idx}" value="child">
+        <span class="radio-dot"></span> 小孩 $26
+      </label>
+    </div>`;
+
+  document.getElementById('members-container').appendChild(card);
+  renderTickets(document.getElementById(`m${idx}_tickets`), `ticket_m${idx}`, `m${idx}`, true);
+  updateFee();
+}
+
+function removeMember(idx) {
+  document.getElementById(`member-${idx}`)?.remove();
+  updateFee();
+}
+
+// ─── 費用計算 ─────────────────────────────────────
+function getPersonFee(nameAttr, prefix) {
+  const r = document.querySelector(`input[name="${nameAttr}"]:checked`);
+  if (!r) return null;
+  const t = TICKETS.find(t => t.value === r.value);
+  const soap = document.getElementById(`${prefix}_soap`)?.checked;
+  return { ticket: t, soap };
+}
+
+function updateFee() {
+  const self = getPersonFee('ticket_self', 'self');
+  if (!self) {
+    document.getElementById('fee-hint').style.display = 'block';
+    document.getElementById('fee-detail').style.display = 'none';
+    return;
+  }
+  document.getElementById('fee-hint').style.display = 'none';
+  document.getElementById('fee-detail').style.display = 'block';
+
+  let html = '', grand = 0;
+
+  const selfName = document.getElementById('self_name').value.trim() || '本人';
+  const selfCold   = getCold('self');
+  const selfDinner = getDinner('self');
+  const selfIns    = getIns('self');
+  html += `<div class="fee-row person"><span>🎓 ${selfName}</span><span></span></div>`;
+  if (selfCold)   { html += `<div class="fee-row sub"><span>冷研探索館（${selfCold.type}）</span><span>$${selfCold.price}</span></div>`; grand += selfCold.price; }
+  html += `<div class="fee-row sub"><span>${self.ticket.label}</span><span>$${self.ticket.price}</span></div>`; grand += self.ticket.price;
+  if (selfDinner) { html += `<div class="fee-row sub"><span>晚餐BBQ＋早餐（${selfDinner.type}）</span><span>$${selfDinner.price}</span></div>`; grand += selfDinner.price; }
+  html += `<div class="fee-row sub"><span>俞家住宿</span><span>$1,963</span></div>`;
+  html += `<div class="fee-row sub"><span>逐鹿午餐</span><span>$360</span></div>`;
+  html += `<div class="fee-row sub"><span>逐鹿導覽＋節目</span><span>$225</span></div>`;
+  html += `<div class="fee-row sub"><span>交通費</span><span>$250</span></div>`;
+  html += `<div class="fee-row sub"><span>劉靜蓉老師費用</span><span>$${TEACHER_FEE}</span></div>`;
+  grand += FIXED_COST + TEACHER_FEE;
+  if (selfIns)    { html += `<div class="fee-row sub"><span>保險（${selfIns.type}）</span><span>$${selfIns.price}</span></div>`; grand += selfIns.price; }
+  if (self.soap)  { html += `<div class="fee-row sub"><span>手工皂製作</span><span>+$${SOAP_PRICE}</span></div>`; grand += SOAP_PRICE; }
+
+  let mi = 1;
+  document.querySelectorAll('.person-card.family').forEach(card => {
+    const id = card.id.replace('member-', '');
+    const m = getPersonFee(`ticket_m${id}`, `m${id}`);
+    const mCold   = getCold(`m${id}`);
+    const mDinner = getDinner(`m${id}`);
+    const mIns    = getIns(`m${id}`);
+    if (m) {
+      const mName = document.getElementById(`m${id}_name`)?.value.trim() || `家屬 ${mi}`;
+      html += `<div class="fee-row person"><span>👤 ${mName}</span><span></span></div>`;
+      if (mCold)   { html += `<div class="fee-row sub"><span>冷研探索館（${mCold.type}）</span><span>$${mCold.price}</span></div>`; grand += mCold.price; }
+      html += `<div class="fee-row sub"><span>${m.ticket.label}</span><span>$${m.ticket.price}</span></div>`; grand += m.ticket.price;
+      if (mDinner) { html += `<div class="fee-row sub"><span>晚餐BBQ＋早餐（${mDinner.type}）</span><span>$${mDinner.price}</span></div>`; grand += mDinner.price; }
+      html += `<div class="fee-row sub"><span>俞家住宿</span><span>$1,963</span></div>`;
+      html += `<div class="fee-row sub"><span>逐鹿午餐</span><span>$360</span></div>`;
+      html += `<div class="fee-row sub"><span>逐鹿導覽＋節目</span><span>$225</span></div>`;
+      html += `<div class="fee-row sub"><span>交通費</span><span>$250</span></div>`;
+      grand += FIXED_COST;
+      if (mIns)    { html += `<div class="fee-row sub"><span>保險（${mIns.type}）</span><span>$${mIns.price}</span></div>`; grand += mIns.price; }
+      if (m.soap)  { html += `<div class="fee-row sub"><span>手工皂製作</span><span>+$${SOAP_PRICE}</span></div>`; grand += SOAP_PRICE; }
+      mi++;
+    }
+  });
+
+  html += `<div class="fee-row total"><span>應付總金額</span><span>$${grand}</span></div>`;
+  document.getElementById('fee-detail').innerHTML = html;
+}
+
+// 姓名輸入時即時更新費用摘要人名
+document.getElementById('self_name').addEventListener('input', updateFee);
+
+// ─── 驗證 & 送出 ──────────────────────────────────
+function validId(s) { return /^[A-Z][12]\d{8}$/.test(s.toUpperCase()); }
+
+function setStatus(msg, cls) {
+  const el = document.getElementById('status-msg');
+  el.textContent = msg; el.className = cls;
+}
+
+async function submitForm() {
+  const name   = document.getElementById('self_name').value.trim();
+  const by = document.getElementById('self_by').value.trim();
+  const bm = document.getElementById('self_bm').value.trim();
+  const bd = document.getElementById('self_bd').value.trim();
+  const bday   = by && bm && bd ? `民國${by}年${bm}月${bd}日` : '';
+  const idno   = document.getElementById('self_idno').value.trim().toUpperCase();
+  const phone  = document.getElementById('self_phone').value.trim();
+  const bankCode  = document.getElementById('self_bank_code').value.trim();
+  const bankLast5 = document.getElementById('self_bank').value.trim();
+  const bankDate  = document.getElementById('self_bank_date').value;
+  const note   = document.getElementById('note').value.trim();
+  const self   = getPersonFee('ticket_self', 'self');
+  const carVal = document.querySelector('input[name="car"]:checked')?.value ?? '';
+  const carSeats = carVal === 'yes' ? (document.getElementById('car_seats').value || '') : '';
+
+  if (!name)          { setStatus('請填寫姓名', 'err'); return; }
+  if (!bday)          { setStatus('請填寫出生年月日', 'err'); return; }
+  if (!idno)          { setStatus('請填寫身份證字號', 'err'); return; }
+  if (!validId(idno)) { setStatus('身份證字號格式不正確', 'err'); return; }
+  if (!phone)         { setStatus('請填寫聯絡電話', 'err'); return; }
+  if (!bankCode)  { setStatus('請填寫您的銀行代碼', 'err'); return; }
+  if (!bankLast5) { setStatus('請填寫您的匯款帳號', 'err'); return; }
+  if (!bankDate)  { setStatus('請填寫匯款日期', 'err'); return; }
+  if (!carVal)        { setStatus('請選擇是否可提供交通工具', 'err'); return; }
+  const selfCold = getCold('self');
+  if (!selfCold)      { setStatus('請選擇冷研探索館票型（大人／小孩）', 'err'); return; }
+  if (!self)          { setStatus('請選擇咩咩上樹票種', 'err'); return; }
+  const selfDinner = getDinner('self');
+  if (!selfDinner)    { setStatus('請選擇晚餐BBQ票型', 'err'); return; }
+  const selfIns = getIns('self');
+  if (!selfIns)       { setStatus('請選擇保險類型（大人／小孩）', 'err'); return; }
+
+  const members = [];
+  let mi = 1;
+  for (const card of document.querySelectorAll('.person-card.family')) {
+    const id    = card.id.replace('member-', '');
+    const mName = document.getElementById(`m${id}_name`).value.trim();
+    const mBy = document.getElementById(`m${id}_by`).value.trim();
+    const mBm = document.getElementById(`m${id}_bm`).value.trim();
+    const mBd = document.getElementById(`m${id}_bd`).value.trim();
+    const mBday = mBy && mBm && mBd ? `民國${mBy}年${mBm}月${mBd}日` : '';
+    const mIdno = document.getElementById(`m${id}_idno`).value.trim().toUpperCase();
+    const m     = getPersonFee(`ticket_m${id}`, `m${id}`);
+
+    if (!mName)          { setStatus(`家屬 ${mi} 請填寫姓名`, 'err'); return; }
+    if (!mBday)          { setStatus(`家屬 ${mi} 請填寫出生年月日`, 'err'); return; }
+    if (!mIdno)          { setStatus(`家屬 ${mi} 請填寫身份證字號`, 'err'); return; }
+    if (!validId(mIdno)) { setStatus(`家屬 ${mi} 身份證字號格式不正確`, 'err'); return; }
+    const mCold   = getCold(`m${id}`);
+    const mDinner = getDinner(`m${id}`);
+    if (!mCold)          { setStatus(`家屬 ${mi} 請選擇冷研探索館票型`, 'err'); return; }
+    if (!m)              { setStatus(`家屬 ${mi} 請選擇咩咩上樹票種`, 'err'); return; }
+    if (!mDinner)        { setStatus(`家屬 ${mi} 請選擇晚餐BBQ票型`, 'err'); return; }
+    const mIns = getIns(`m${id}`);
+    if (!mIns)           { setStatus(`家屬 ${mi} 請選擇保險類型（大人／小孩）`, 'err'); return; }
+
+    members.push({ name: mName, birthday: mBday, idno: mIdno,
+      cold: mCold.type, coldAmount: mCold.price,
+      ticket: m.ticket.label, ticketAmount: m.ticket.price,
+      dinner: mDinner.type, dinnerAmount: mDinner.price,
+      ins: mIns.type, insAmount: mIns.price,
+      soap: m.soap ? '參加' : '不參加', soapAmount: m.soap ? SOAP_PRICE : 0 });
+    mi++;
+  }
+
+  const selfSoap   = document.getElementById('self_soap').checked;
+  const selfTotal  = self.ticket.price + selfCold.price + selfDinner.price + selfIns.price + FIXED_COST + TEACHER_FEE + (selfSoap ? SOAP_PRICE : 0);
+  const membTotal  = members.reduce((s, m) => s + m.ticketAmount + m.coldAmount + m.dinnerAmount + m.insAmount + FIXED_COST + m.soapAmount, 0);
+  const grandTotal = selfTotal + membTotal;
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  setStatus('送出中…', 'loading');
+
+  const payload = {
+    timestamp: new Date().toLocaleString('zh-TW', { timeZone:'Asia/Taipei' }),
+    name, birthday: bday, idno, phone, bankCode, bankAccount: bankLast5, bankDate,
+    cold: selfCold.type, coldAmount: selfCold.price,
+    dinner: selfDinner.type, dinnerAmount: selfDinner.price,
+    ins: selfIns.type, insAmount: selfIns.price,
+    fixedAmount: FIXED_COST,
+    teacherFee: TEACHER_FEE,
+    canProvideVehicle: carVal === 'yes' ? '可以' : '無法',
+    vehicleSeats: carSeats,
+    ticket: self.ticket.label, ticketAmount: self.ticket.price,
+    soap: selfSoap ? '參加' : '不參加', soapAmount: selfSoap ? SOAP_PRICE : 0,
+    selfTotal, members, grandTotal,
+    note,
+  };
+
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject: `【畢業旅行報名】${name}`,
+        from_name: '華醫調保系畢業旅行報名系統',
+        ...payload,
+        members: JSON.stringify(payload.members),
+      }),
+    });
+    const result = await res.json();
+    if (result.success) {
+      showSuccess(name, self, selfSoap, members, grandTotal);
+    } else {
+      throw new Error(result.message || '送出失敗');
+    }
+  } catch(err) {
+    btn.disabled = false;
+    setStatus('送出失敗，請稍後再試：' + err.message, 'err');
+  }
+}
+
+function showSuccess(name, self, selfSoap, members, grandTotal) {
+  document.getElementById('form-body').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'block';
+  let lines = `${name} 同學，已收到你的報名！<br><br>`;
+  lines += `<strong>本人：</strong>${self.ticket.label} $${self.ticket.price}`;
+  if (selfSoap) lines += ` + 手工皂 $${SOAP_PRICE}`;
+  members.forEach((m, i) => {
+    lines += `<br><strong>家屬${i+1}（${m.name}）：</strong>${m.ticket} $${m.ticketAmount}`;
+    if (m.soapAmount) lines += ` + 手工皂 $${SOAP_PRICE}`;
+  });
+  lines += `<br><br>（含冷研、晚餐、保險、住宿、餐費、導覽、交通等所有費用）`;
+  lines += `<br><strong>應付總金額：$${grandTotal}</strong>`;
+  document.getElementById('success-detail').innerHTML = lines;
+}
+</script>
+</body>
+</html>

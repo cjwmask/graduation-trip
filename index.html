@@ -305,7 +305,8 @@
             </label>
           </div>
           <div id="car-seats-wrap" style="display:none; margin-top:8px;">
-            <input type="number" id="car_seats" placeholder="可搭載人數（不含駕駛）" min="1" max="20" style="width:100%; padding:9px 12px; border:1.5px solid #ddd; border-radius:8px; font-size:15px; outline:none;">
+            <label style="display:block; font-size:13px; font-weight:600; color:#555; margin-bottom:5px;">可搭載總人數（不含司機）<span class="req">*</span></label>
+            <input type="number" id="car_seats" placeholder="請填寫可搭載乘客人數（不含司機）" min="1" max="20" style="width:100%; padding:9px 12px; border:1.5px solid #ddd; border-radius:8px; font-size:15px; outline:none;">
           </div>
         </div>
         <div class="ticket-section-label">🧊 冷研探索館（必選）<span class="req">*</span></div>
@@ -510,7 +511,13 @@ function selectCar(val) {
   document.getElementById('car-yes-chip').classList.toggle('sel', val === 'yes');
   document.getElementById('car-no-chip').classList.toggle('sel', val === 'no');
   document.getElementById('car-seats-wrap').style.display = val === 'yes' ? 'block' : 'none';
+  document.getElementById('car_seats').style.borderColor = '#ddd';
 }
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('car_seats').addEventListener('input', function() {
+    this.style.borderColor = this.value ? '#7986cb' : '#ddd';
+  });
+});
 
 // ─── 事件 ────────────────────────────────────────
 function onTicket(prefix) {
@@ -712,6 +719,12 @@ async function submitForm() {
   if (!bankLast5) { setStatus('請填寫您的匯款帳號', 'err'); return; }
   if (!bankDate)  { setStatus('請填寫匯款日期', 'err'); return; }
   if (!carVal)        { setStatus('請選擇是否可提供交通工具', 'err'); return; }
+  if (carVal === 'yes' && !document.getElementById('car_seats').value) {
+    setStatus('請填寫可搭載總人數（不含司機）', 'err');
+    document.getElementById('car_seats').style.borderColor = '#e53935';
+    document.getElementById('car_seats').focus();
+    return;
+  }
   const selfCold = getCold('self');
   if (!selfCold)      { setStatus('請選擇冷研探索館票型（大人／小孩）', 'err'); return; }
   if (!self)          { setStatus('請選擇咩咩上樹票種', 'err'); return; }
